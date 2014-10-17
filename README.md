@@ -20,6 +20,15 @@ The docker build does the following:
 
 The environment is primarily used to launch a container that contains grails so you can either run grails inside the container for development, testing, and/or creating deployable WAR archives.  You can even use it to deploy a Grails app as Tomcat 8 is included by default.
 
+### Versions
+
+Different containers have been created for different grails versions.  Here's a sample list of versions that are built:
+
+* latest - usually updated to correspond to the latest grails version release
+* x.x - uses the newest minor version for the major version specified
+
+Grails major versions tags such as 2.1 and 2.2 uses the newest version for that branch.  So, for example, grails:2.1 will use 2.1.5
+
 ### For Development
 
 To run the container for development, you will need to map the grails dev port and your project directory into the container like the following:
@@ -76,6 +85,10 @@ RUN grails war app.war
 # place app into tomcat app (alternatively, place it into ROOT for root webapp)
 RUN mv app.war /tomcat/webapps
 ```
+
+## Building Your Own Version-Specific Grails Container
+
+A base grails container has been built and is set under `onesysadmin/grails:base`.  By using this base container as your parent, you can just use gvm to install the version you need.  Better yet, submit a pull request and have it included into this repository to be shared with others.
 
 ## CONTRIBUTING
 
