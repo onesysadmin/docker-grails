@@ -8,6 +8,9 @@ ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 RUN mkdir /app
 WORKDIR /app
 
+# Set entry point
+ENTRYPOINT ["grails"]
+
 # install curl so we can install gvm
 RUN apt-get update && \
     apt-get install -yqq --no-install-recommends curl unzip && \

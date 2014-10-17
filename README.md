@@ -12,9 +12,7 @@ The docker build does the following:
 * Uses Ubuntu 14.04 (Trusty)
 * Uses Oracle JDK 7
 * Uses Tomcat 8
-* Installs Grails in `/usr/local/grails-<version>`
-* Creates a link from /usr/local/grails/ to the versioned grails
-* Sets certain environment variables
+* Grails via gvm
 
 ## Using the container
 
@@ -29,24 +27,30 @@ Different containers have been created for different grails versions.  Here's a 
 
 Grails major versions tags such as 2.1 and 2.2 uses the newest version for that branch.  So, for example, grails:2.1 will use 2.1.5
 
-### For Development
+### Launching Grails
 
-To run the container for development, you will need to map the grails dev port and your project directory into the container like the following:
-
-```
-docker run -i -t -p 8080:8080 -v .:/app bash
-cd /app
-grails run-app
-```
-
-If you map the project directory into the container, you can development under your host IDE and the docker container will detect those changes and reload
-
-Alternatively, you can use it similar to run all your grails commands so you don't need to install Grails on your host OS.
+The container is set to run like an app via the use of ENTRYPOINT.  That means you can do something like the following:
 
 ```
-docker run -i -t -p 8080:8080 -v .:/app grails create-app
-docker run -i -t -p 8080:8080 -v .:/app grails compile
+docker run -i -t -p 8080:8080 --rm -v .:/app onesysadmin/grails:2.4 run-app
 ```
+
+This allows you to run grails like it has been installed on your host OS without actually installing all the developer tools on your OS. Cool!
+
+Want to run grails interactively so you can issue multiple commands without having to keep launching new runtime containers and recompiling and reinstalling plugins every single time?
+
+```
+docker run -i -t -p 8080:8080 --rm -v .:/app onesysadmin/grails:2.4 interactive
+```
+
+Want a bash shell into the container so you can do some setups instead of launching grails by default? Override the entry point:
+
+```
+# override entrypoint
+docker run -i -t -p 8080:8080 --rm -v .:/app --entrypoint bash onesysadmin/grails:2.4
+```
+
+If you map the project directory into the container, you can development under your host IDE and grails will detect those changes and reload
 
 ### Testing and Continuous Integration
 
@@ -55,13 +59,12 @@ For continuous integration or to run your tests under a CI server like Jenkins, 
 ```
 #!/bin/bash
 
-
 # test the app first to see if it passes
 # create app-specific container beforehand if additional dependencies are required
 # use your own container to run the tests if that's the case
-docker run -i -t -v .:/app -w /app onesysadmin/grails:<optional grails version> grails test-app
+docker run -i -t -v .:/app onesysadmin/grails:latest test-app
 # If tests pass, let's create the full app container
-docker build -t <app name>:<version> .
+docker build -t myorg/myapp:1.1.1 .
 # push out the docker container build to a repository
 docker push myorg/myapp
 ```
@@ -70,14 +73,14 @@ A sample Dockerfile to build your grails web app would be something like the fol
 
 ```
 # use a tomcat server container or your app specific container with tomcat optionally installed
-FROM onesysadmin/grails:<version>
+FROM onesysadmin/grails:2.4
 
 ENV CATALINA_OPTS -Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1300m -XX:PermSize=256m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC
 
 EXPOSE 8080
 
-# launch script by default
-CMD ["/app/run-app.sh"]
+# launch tomcat instance by default instead of grails
+ENTRYPOINT ["/app/run-app.sh"]
 
 ADD <app files> /src
 WORKDIR /src
@@ -87,6 +90,8 @@ RUN mv app.war /tomcat/webapps
 ```
 
 ## Building Your Own Version-Specific Grails Container
+
+Creating your version-specific grails container allows you to use any grails version you like along with installing any other supporting frameworks or libraries that your app requires.
 
 A base grails container has been built and is set under `onesysadmin/grails:base`.  By using this base container as your parent, you can just use gvm to install the version you need.  Better yet, submit a pull request and have it included into this repository to be shared with others.
 
