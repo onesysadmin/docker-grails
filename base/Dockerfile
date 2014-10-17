@@ -18,3 +18,4 @@ RUN apt-get update && \
 RUN curl -s get.gvmtool.net | bash
 RUN ln -s /.gvm/bin/gvm-init.sh /etc/profile.d/gvm-init.sh
 ADD gvm.config /.gvm/etc/config
+ADD gvm-wrapper.sh /usr/local/bin/
