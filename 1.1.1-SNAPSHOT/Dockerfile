@@ -14,4 +14,5 @@ ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 ENV GRAILS_HOME /usr/local/grails
 ENV PATH /usr/local/grails/bin:$PATH
 
-WORKDIR /
+RUN mkdir /app
+WORKDIR /app
