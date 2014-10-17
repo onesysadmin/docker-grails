@@ -13,3 +13,5 @@ ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 
 RUN mkdir /app
 WORKDIR /app
+
+ADD gvm.config /.gvm/etc/config
