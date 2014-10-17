@@ -73,3 +73,12 @@ RUN grails war app.war
 RUN mv app.war /tomcat/webapps
 ```
 
+## CONTRIBUTING
+
+Want to fix/enhance the codebase or add more grails versions to be built?  
+
+1. Fork this repository
+2. Add your code changes
+3. Submit a pull request to this repository
+
+Once approved and merged, it will be added to Docker Hub to be built.
