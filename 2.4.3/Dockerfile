@@ -1,3 +1,3 @@
 FROM onesysadmin/grails:base
 
-RUN gvm install grails 2.4.3 && gvm flush archives
+RUN gvm-wrapper.sh install grails 2.4.3 && gvm-wrapper.sh flush archives

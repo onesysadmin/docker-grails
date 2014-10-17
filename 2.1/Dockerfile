@@ -1,4 +1,4 @@
 FROM onesysadmin/grails:base
 
 # install newest version of grails 2.1.x
-RUN gvm install grails 2.1.5 && gvm flush archives
+RUN gvm-wrapper.sh install grails 2.1.5 && gvm-wrapper.sh flush archives
