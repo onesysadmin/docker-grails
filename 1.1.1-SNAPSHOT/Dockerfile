@@ -4,7 +4,7 @@ FROM tutum/tomcat:8.0
 
 # Install Grails
 WORKDIR /usr/local
-RUN curl -sSL https://github.com/asans/appdist-archive/blob/master/grails/grails-1.1.1-SNAPSHOT-custom.tgz?raw=true | tar xzf -
+RUN wget -O - --quiet https://github.com/asans/appdist-archive/blob/master/grails/grails-1.1.1-SNAPSHOT-custom.tgz?raw=true | tar xzf -
 # somehow contains some trace hidden files that causes our grails not to run properly
 RUN ln -s /usr/local/grails-1.1.1-SNAPSHOT /usr/local/grails
 RUN rm -f /usr/local/grails-1.1.1-SNAPSHOT/lib/._*
