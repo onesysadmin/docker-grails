@@ -16,4 +16,5 @@ RUN apt-get update && \
 
 # install gvm
 RUN curl -s get.gvmtool.net | bash
+RUN cp /.gvm/bin/gvm-init.sh /etc/profile.d
 ADD gvm.config /.gvm/etc/config
