@@ -12,32 +12,36 @@ The docker build does the following:
 * Uses Ubuntu 14.04 (Trusty)
 * Uses Oracle JDK 7
 * Uses Tomcat 8
-* Installs Grails installed in `/usr/local/grails-<version>`
+* Installs Grails in `/usr/local/grails-<version>`
 * Creates a link from /usr/local/grails/ to the versioned grails
 * Sets certain environment variables
 
 ## Using the container
 
-The environment is primarily used to launch a container that contains grails so you can either run grails inside the container for development, testing, and creating deployable WAR archives.
+The environment is primarily used to launch a container that contains grails so you can either run grails inside the container for development, testing, and/or creating deployable WAR archives.  You can even use it to deploy a Grails app as Tomcat 8 is included by default.
 
-### Development
+### For Development
 
 To run the container for development, you will need to map the grails dev port and your project directory into the container like the following:
 
-`docker run -i -t -p 8080:8080 -v <project root>:/app bash`
-
-Once you are in the instance, you can then do something like the following:
-
 ```
+docker run -i -t -p 8080:8080 -v .:/app bash
 cd /app
 grails run-app
 ```
 
 If you map the project directory into the container, you can development under your host IDE and the docker container will detect those changes and reload
 
+Alternatively, you can use it similar to run all your grails commands so you don't need to install Grails on your host OS.
+
+```
+docker run -i -t -p 8080:8080 -v .:/app grails create-app
+docker run -i -t -p 8080:8080 -v .:/app grails compile
+```
+
 ### Testing and Continuous Integration
 
-For continuous integration or to run your tests under a CI server like Jenkins, you can create a Jenkins project that is capable of launching docker instances.  You can then create a Dockerfile that Jenkins can use to your app container.  Your build/test script might look something like the following:
+For continuous integration or to run your tests under a CI server like Jenkins, you can create a Jenkins project that is capable of launching docker instances.  You can then create a Dockerfile that Jenkins can use to test or deploy your app container.  Your build/test script might look something like the following:
 
 ```
 #!/bin/bash
@@ -46,11 +50,11 @@ For continuous integration or to run your tests under a CI server like Jenkins, 
 # test the app first to see if it passes
 # create app-specific container beforehand if additional dependencies are required
 # use your own container to run the tests if that's the case
-docker run -i -t -v <project dir>:/app -w /app onesysadmin/grails:<optional grails version> grails test-app
+docker run -i -t -v .:/app -w /app onesysadmin/grails:<optional grails version> grails test-app
 # If tests pass, let's create the full app container
 docker build -t <app name>:<version> .
 # push out the docker container build to a repository
-docker push <app name>
+docker push myorg/myapp
 ```
 
 A sample Dockerfile to build your grails web app would be something like the following:
