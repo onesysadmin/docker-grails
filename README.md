@@ -12,7 +12,7 @@ The docker build does the following:
 * Uses Ubuntu 14.04 (Trusty)
 * Uses Oracle JDK 7
 * Uses Tomcat 8
-* Installs Grails installed in /usr/local/grails-<version>
+* Installs Grails installed in `/usr/local/grails-<version>`
 * Creates a link from /usr/local/grails/ to the versioned grails
 * Sets certain environment variables
 
