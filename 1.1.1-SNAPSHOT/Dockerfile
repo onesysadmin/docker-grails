@@ -1,7 +1,7 @@
 FROM tifayuki/java:7
 
 # Set default Grails Java Runtime env
-ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
+ENV JAVA_OPTS -Xms256m -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 ENV GRAILS_HOME /usr/local/grails
 ENV PATH /usr/local/grails/bin:$PATH
 
