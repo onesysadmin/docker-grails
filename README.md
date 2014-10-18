@@ -9,14 +9,13 @@ Creates a docker container for specific grails versions.
 
 The docker build does the following:
 
-* Uses Ubuntu 14.04 (Trusty)
+* Uses Ubuntu Trusty (14.04.x)
 * Uses Oracle JDK 7
-* Uses Tomcat 8
 * Grails via gvm
 
 ## Using the container
 
-The environment is primarily used to launch a container that contains grails so you can either run grails inside the container for development, testing, and/or creating deployable WAR archives.  You can even use it to deploy a Grails app as Tomcat 8 is included by default.
+The environment is primarily used to launch a container that contains grails so you can either run grails inside the container for development, testing, and/or creating deployable WAR archives.
 
 ### Versions
 
@@ -40,7 +39,10 @@ This allows you to run grails like it has been installed on your host OS without
 Want to run grails interactively so you can issue multiple commands without having to keep launching new runtime containers and recompiling and reinstalling plugins every single time?
 
 ```
-docker run -i -t -p 8080:8080 --rm -v .:/app onesysadmin/grails:2.4 interactive
+# in order versions of grails
+docker run -i -t -p 8080:8080 --rm -v .:/app onesysadmin/grails:2.0 interactive
+# in newer versions of grails, grails will run interactively when no args are given
+docker run -i -t -p 8080:8080 --rm -v .:/app onesysadmin/grails:2.4
 ```
 
 Want a bash shell into the container so you can do some setups instead of launching grails by default? Override the entry point:
@@ -63,7 +65,8 @@ For continuous integration or to run your tests under a CI server like Jenkins, 
 # create app-specific container beforehand if additional dependencies are required
 # use your own container to run the tests if that's the case
 docker run -i -t -v .:/app onesysadmin/grails:latest test-app
-# If tests pass, let's create the full app container
+# If tests pass, let's create the war archive and build the deployment container
+docker run -i -t -v .:/app onesysadmin/grails:latest war app.war
 docker build -t myorg/myapp:1.1.1 .
 # push out the docker container build to a repository
 docker push myorg/myapp
@@ -73,31 +76,19 @@ A sample Dockerfile to build your grails web app would be something like the fol
 
 ```
 # use a tomcat server container or your app specific container with tomcat optionally installed
-FROM onesysadmin/grails:2.4
+FROM tutum/tomcat:8.0
 
 ENV CATALINA_OPTS -Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1300m -XX:PermSize=256m -XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC
 
 EXPOSE 8080
 
-# launch tomcat instance by default instead of grails
-ENTRYPOINT ["/app/run-app.sh"]
-
-ADD <app files> /src
-WORKDIR /src
-RUN grails war app.war
 # place app into tomcat app (alternatively, place it into ROOT for root webapp)
-RUN mv app.war /tomcat/webapps
+ADD app.war /tomcat/webapps
 ```
-
-## Building Your Own Version-Specific Grails Container
-
-Creating your version-specific grails container allows you to use any grails version you like along with installing any other supporting frameworks or libraries that your app requires.
-
-A base grails container has been built and is set under `onesysadmin/grails:base`.  By using this base container as your parent, you can just use gvm to install the version you need.  Better yet, submit a pull request and have it included into this repository to be shared with others.
 
 ## CONTRIBUTING
 
-Want to fix/enhance the codebase or add more grails versions to be built?  
+Want to fix/enhance the codebase or add more grails versions to be repo?  
 
 1. Fork this repository
 2. Add your code changes

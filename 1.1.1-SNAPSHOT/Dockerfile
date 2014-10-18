@@ -1,6 +1,9 @@
-FROM tutum/tomcat:8.0
+FROM tifayuki/java:7
 
-# Java JDK 7 already installed
+# Set default Grails Java Runtime env
+ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
+ENV GRAILS_HOME /usr/local/grails
+ENV PATH /usr/local/grails/bin:$PATH
 
 # Install Grails
 WORKDIR /usr/local
@@ -8,11 +11,6 @@ RUN wget -O - --quiet https://github.com/asans/appdist-archive/blob/master/grail
 # somehow contains some trace hidden files that causes our grails not to run properly
 RUN ln -s /usr/local/grails-1.1.1-SNAPSHOT /usr/local/grails
 RUN rm -f /usr/local/grails-1.1.1-SNAPSHOT/lib/._*
-
-# Set default Grails Java Runtime env
-ENV JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
-ENV GRAILS_HOME /usr/local/grails
-ENV PATH /usr/local/grails/bin:$PATH
 
 RUN mkdir /app
 WORKDIR /app
