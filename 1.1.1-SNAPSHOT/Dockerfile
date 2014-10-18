@@ -5,6 +5,8 @@ ENV JAVA_OPTS -Xms256m -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 ENV GRAILS_HOME /usr/local/grails
 ENV PATH /usr/local/grails/bin:$PATH
 
+ENTRYPOINT ["grails"]
+
 # Install Grails
 WORKDIR /usr/local
 RUN wget -O - --quiet --no-check-certificate https://github.com/asans/appdist-archive/blob/master/grails/grails-1.1.1-SNAPSHOT-custom.tgz?raw=true | tar xzf -
