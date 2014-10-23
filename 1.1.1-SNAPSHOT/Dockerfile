@@ -8,6 +8,8 @@ ENV PATH /usr/local/grails/bin:$PATH
 RUN mkdir /app
 WORKDIR /app
 
+CMD ["grails", "interactive"]
+
 # Install Grails
 RUN wget -O - --quiet --no-check-certificate https://github.com/asans/appdist-archive/blob/master/grails/grails-1.1.1-SNAPSHOT-custom.tgz?raw=true | tar xzf - -C /usr/local
 # somehow contains some trace hidden files that causes our grails not to run properly

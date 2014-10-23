@@ -3,6 +3,8 @@ FROM onesysadmin/gvm
 RUN mkdir /app
 WORKDIR /app
 
+CMD ["grails", "interactive"]
+
 # Set default Grails Java Runtime env
 ENV JAVA_OPTS -Xms256m -Xmx512m -XX:MaxPermSize=256m -Djetty.serverHost=0.0.0.0
 

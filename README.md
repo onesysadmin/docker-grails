@@ -32,7 +32,7 @@ To run grails:
 
 ```
 # launch the latest version of grails
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails run-app
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails
 # launch a specific major version of grails
 docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.3 grails run-app
 docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.2 grails run-app
