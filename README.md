@@ -1,7 +1,7 @@
 docker-grails
 =============
 
-Grails in Docker Container.
+Grails in Docker Container.  This allows you to run grails like it has been installed on your host OS without actually installing all the developer tools on your OS. Cool!
 
 Creates a docker container for specific grails versions.
 
@@ -28,53 +28,64 @@ Grails major versions tags such as 2.1 and 2.2 uses the newest version for that 
 
 ### Launching Grails
 
-The container is set to run like an app via the use of ENTRYPOINT.  That means you can do something like the following:
+To run grails:
 
 ```
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.4 run-app
+# launch the latest version of grails
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails run-app
+# launch a specific major version of grails
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.3 grails run-app
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.2 grails run-app
 ```
 
-This allows you to run grails like it has been installed on your host OS without actually installing all the developer tools on your OS. Cool!
+By mapping the project directory into the container using -v option, you can development under your host IDE.
 
-If you map the project directory into the container, you can development under your host IDE and grails will detect those changes and reload
+Since the entire command line is so long, you can set an alias to run grails:
+
+```
+#set alias
+alias grails="docker run -it -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails"
+#Launch grails just using running grails
+grails run-app
+```
 
 #### Running Grails Interactively
 
-Run grails interactively so you can issue multiple commands without having to keep launching new runtime containers and recompiling and reinstalling plugins every single time?
+Run grails interactively so you can issue multiple commands without having to keep launching new runtime containers and recompiling and reinstalling plugins every single time:
 
 ```
 # in order versions of grails
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.0 interactive
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails interactive
 # in newer versions of grails, grails will run interactively when no args are given
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.4
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails
 ```
 
 #### Start a Bash Shell Instead of Launching Grails
 
-Want a bash shell into the container so you can do some setups instead of launching grails by default? Override the entry point:
+Want a bash shell into the container so you can do some setups instead of launching grails?
 
 ```
 # override entrypoint
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app --entrypoint bash onesysadmin/grails:2.4
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails bash
 ```
 
 #### Caching Grails Work Files
 
 Since grails by default sets its work directory to your $USER_HOME/.grails, you will experience the case where every time you launch grails, it will need to re-install all the grails plugins and compile all the files again.  This is useful if we're running tests on a CI server, but not very efficient when developing and writing code.
 
-To speed this up, you can set the grails work directory to be inside your /app so that the cached files are stored and can be reused later:
+To speed this up, you can set the grails work directory to be inside your /app so that the cached files are stored and can be reused when launching new containers:
 
 ```
 # override grails work dir
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails:2.4 -Dgrails.work.dir=/app/.grails
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails -Dgrails.work.dir=/app/.grails
 ```
 
 #### Setting the JAVA_OPTS environment
 
-The containers uses some basic default settings for java memory options like the heap size and the permagen size.  If you require more memory or need to add extra options, you can either set the java options via grail's own environment or override the JAVA_OPTS environment when lauching the docker container:
+The containers sets some basic default settings for java memory options like the heap size and the permagen size.  If you require more memory or need to add extra options, you can either set the java options via grail's own environment variable or override the JAVA_OPTS environment when launching the docker container:
 
 ```
-docker run -i -t -p 8080:8080 --rm -v $PWD:/app -e JAVA_OPTS "<new java options>" onesysadmin/grails:2.4
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app -e JAVA_OPTS "<new java options>" onesysadmin/grails grails
 ```
 
 
@@ -88,9 +99,9 @@ For continuous integration or to run your tests under a CI server like Jenkins, 
 # test the app first to see if it passes
 # create app-specific container beforehand if additional dependencies are required
 # use your own container to run the tests if that's the case
-docker run -i -t -v $PWD:/app onesysadmin/grails:latest test-app
+docker run -i -t -v $PWD:/app onesysadmin/grails grails test-app
 # If tests pass, let's create the war archive and build the deployment container
-docker run -i -t -v $PWD:/app onesysadmin/grails:latest war app.war
+docker run -i -t -v $PWD:/app onesysadmin/grails grails war app.war
 docker build -t myorg/myapp:1.1.1 .
 # push out the docker container build to a repository
 docker push myorg/myapp
