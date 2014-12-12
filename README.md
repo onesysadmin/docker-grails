@@ -80,6 +80,30 @@ To speed this up, you can set the grails work directory to be inside your /app s
 docker run -i -t -p 8080:8080 --rm -v $PWD:/app onesysadmin/grails grails -Dgrails.work.dir=/app/.grails
 ```
 
+A better way to cache project related data separate from other projects is to set the project files in your project's BuildConfig.groovy. The settings appear to be part of the default settings generated in BuildConfig.groovy of a new project as well.
+
+```
+// In your BuildConfig.groovy project file
+grails.project.class.dir = "target/classes"
+grails.project.test.class.dir = "target/test-classes"
+grails.project.test.reports.dir = "target/test-reports"
+grails.project.work.dir = "target/work"
+```
+
+In fact, if you do this, you shouldn't need to set `grails.work.dir`.
+
+This is great for CI / Jenkins build environments since all the project dependencies, plugins, and compiled outputs are located in your build workspace so it won't really affect other projects and it's easy to clean as well.
+
+Unfortunately, in newer versions of Grails where maven repository is used to download jar dependencies, the maven cache uses a different setting and is stored in a separate directory, usually $USER_HOME/.m2/repository.  To set this, set the environment variable GRAILS_DEPENDENCY_CACHE_DIR to your docker run command:
+
+```
+docker run -i -t -p 8080:8080 --rm -v $PWD:/app -e GRAILS_DEPENDENCY_CACHE_DIR=/app/.m2/repository onesysadmin/grails grails
+```
+
+This environment variable is currently only recognized in Grails 2.4.x image.  Some older Grails versions do not make use of maven dependency management and resolution, so it's not set.
+
+If you like, you can set this in your project BuildConfig.groovy by setting the `grails.dependency.cache.dir` config parameter.  However, you can also set this in the environment variable.
+
 #### Setting the JAVA_OPTS environment
 
 The containers sets some basic default settings for java memory options like the heap size and the permagen size.  If you require more memory or need to add extra options, you can either set the java options via grail's own environment variable or override the JAVA_OPTS environment when launching the docker container:
